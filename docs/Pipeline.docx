@@ -1,0 +1,249 @@
+PAGE 1 — Cover Page
+Project Name  : Cryptocurrency Volatility Prediction
+Document Type : Final Report
+Your Name     : [Aditya Sen]
+Date          : March 2026
+Institution   : PW Skills
+
+PAGE 2 — Table of Contents
+1. Executive Summary
+2. Problem Statement
+3. Dataset Description
+4. Methodology
+5. Feature Engineering Summary
+6. Model Results
+7. Key Insights
+8. Deployment Summary
+9. Conclusion
+
+PAGE 3 — 1. Executive Summary
+This project builds a Machine Learning model 
+to predict cryptocurrency volatility using 
+historical Bitcoin market data.
+
+The model uses XGBoost Regressor trained on 
+23 engineered features derived from OHLC prices,
+trading volume, and market capitalization.
+
+Final Model Performance:
+- R² Score : 0.8183 (81% Accurate)
+- RMSE     : 0.007201
+- MAE      : 0.004658
+
+The model is deployed as a Streamlit web 
+application that predicts volatility in 
+real-time based on user inputs.
+
+PAGE 4 — 2. Problem Statement
+Cryptocurrency markets are highly volatile. 
+Understanding and forecasting this volatility 
+is crucial for market participants.
+
+Volatility refers to the degree of variation 
+in the price of a cryptocurrency over time. 
+High volatility can lead to significant risks 
+for traders and investors.
+
+Objective:
+Build a machine learning model to predict 
+cryptocurrency volatility levels based on:
+- OHLC (Open, High, Low, Close) prices
+- Trading Volume
+- Market Capitalization
+
+Goal:
+Anticipate periods of heightened volatility,
+enabling traders and financial institutions 
+to manage risks and make informed decisions.
+
+PAGE 5 — 3. Dataset Description
+Source   : Cryptocurrency Historical Prices
+Format   : CSV
+Size     : 72,946 rows × 10 columns
+
+Columns:
+┌─────────────┬───────────┬────────────────────────┐
+│ Column      │ Type      │ Description            │
+├─────────────┼───────────┼────────────────────────┤
+│ date        │ object    │ Trading date           │
+│ crypto_name │ object    │ Cryptocurrency name    │
+│ open        │ float64   │ Opening price          │
+│ high        │ float64   │ Highest price of day   │
+│ low         │ float64   │ Lowest price of day    │
+│ close       │ float64   │ Closing price          │
+│ volume      │ float64   │ Trading volume         │
+│ marketCap   │ float64   │ Market capitalization  │
+│ timestamp   │ object    │ Timestamp (removed)    │
+└─────────────┴───────────┴────────────────────────┘
+
+Cryptocurrencies : 50+
+Missing Values   : 0
+Focus            : Bitcoin (3248 rows)
+Date Range       : 2013 to 2023
+
+PAGE 6 — 4. Methodology
+Step 1 — Data Collection
+→ Loaded dataset.csv (72,946 rows)
+→ Filtered Bitcoin data (3248 rows)
+→ Saved bitcoin_clean.csv
+
+Step 2 — Data Preprocessing
+→ Removed unnecessary columns
+→ Converted date to datetime format
+→ Sorted data by date
+→ Verified no missing values
+
+Step 3 — Exploratory Data Analysis
+→ Analyzed price trends
+→ Plotted volatility over time
+→ Created correlation heatmap
+→ Analyzed Bollinger Bands
+→ Analyzed RSI indicator
+→ Analyzed trading volume
+
+Step 4 — Feature Engineering
+→ Created target variable (volatility_7d)
+→ Created 23 features
+→ Removed NaN rows
+→ Final dataset: 3012 rows × 33 columns
+
+Step 5 — Model Training
+→ Trained Random Forest
+→ Trained XGBoost
+→ Compared results
+→ Selected XGBoost as best model
+
+Step 6 — Deployment
+→ Built Streamlit web application
+→ Real-time volatility prediction
+→ Color coded risk output
+
+PAGE 7 — 5. Feature Engineering Summary
+Total Features Created : 23
+
+Category          Features
+─────────────────────────────────────────
+Target Variable   volatility_7d
+
+Price Features    MA_7, MA_14, MA_30
+                  price_range
+                  price_range_pct
+                  close_open_pct
+
+Technical         BB_width (Bollinger Bands)
+Indicators        ATR_14 (Avg True Range)
+                  RSI_14 (Relative Strength)
+
+Volume Features   volume_MA7
+                  volume_change
+                  volume_spike
+                  liquidity_ratio
+
+Lag Features      volatility_lag1
+                  volatility_lag3
+                  volatility_lag7
+                  return_lag1
+                  return_lag3
+
+Most Important Feature : volatility_lag1
+Importance Score       : 0.78 (78%)
+
+PAGE 8 — 6. Model Results
+Two models were trained and compared:
+
+┌───────────────┬──────────┬──────────┬────────┐
+│ Model         │ RMSE     │ MAE      │ R²     │
+├───────────────┼──────────┼──────────┼────────┤
+│ Random Forest │ 0.007467 │ 0.005019 │ 0.8046 │
+│ XGBoost       │ 0.007201 │ 0.004658 │ 0.8183 │
+└───────────────┴──────────┴──────────┴────────┘
+
+Winner : XGBoost ✅
+
+Reason XGBoost Won:
+- Lower RMSE (0.007201 vs 0.007467)
+- Lower MAE  (0.004658 vs 0.005019)
+- Higher R²  (0.8183 vs 0.8046)
+
+Interpretation:
+- R² = 0.8183 means model explains 
+  81.83% of volatility variation
+- RMSE = 0.007 means average error 
+  is only 0.007 — very small!
+- MAE = 0.004 means on average model 
+  is off by only 0.004
+
+PAGE 9 — 7. Key Insights
+Insight 1 — Past Volatility Predicts Future
+The most important feature was volatility_lag1
+(previous day volatility) with 78% importance.
+This shows volatility follows patterns.
+
+Insight 2 — Price Range Matters
+price_range_pct was 2nd most important.
+Large daily price swings indicate 
+upcoming volatile periods.
+
+Insight 3 — Volume Spike = Volatility
+When trading volume spikes unusually high,
+it often precedes volatile price movements.
+
+Insight 4 — Bollinger Bands Work
+BB_width was among top features.
+Wider bands = higher expected volatility.
+
+Insight 5 — Bitcoin Has Volatile Phases
+From EDA, Bitcoin showed extreme volatility
+during 2017-2018 and 2020-2021 bull runs
+
+PAGE 10 — 8. Deployment Summary
+Tool          : Streamlit
+File          : app.py
+URL           : localhost:8501
+
+Features:
+- Professional dark theme UI
+- Real-time volatility prediction
+- Color coded risk levels
+- Input summary display
+- Model performance metrics shown
+
+User Flow:
+1. Open app at localhost:8501
+2. Enter OHLC prices in sidebar
+3. Enter Volume and Market Cap
+4. Click Predict Volatility button
+5. View prediction result
+
+Risk Classification:
+🔴 HIGH   → Volatility > 0.05
+            Market is highly unstable
+🟡 MEDIUM → Volatility 0.02 to 0.05
+            Proceed with caution
+🟢 LOW    → Volatility < 0.02
+            Market is stable
+
+PAGE 11 — 9. Conclusion
+This project successfully built a Machine 
+Learning model to predict cryptocurrency 
+volatility with 81.83% accuracy (R² = 0.8183).
+
+Key Achievements:
+✅ Processed 72,946 cryptocurrency records
+✅ Engineered 23 meaningful features
+✅ Trained and compared 2 ML models
+✅ XGBoost achieved R² = 0.8183
+✅ Deployed as Streamlit web application
+✅ Real-time prediction with risk levels
+
+Future Improvements:
+→ Add more cryptocurrencies (ETH, BNB)
+→ Use LSTM deep learning model
+→ Add news sentiment analysis
+→ Deploy on cloud (AWS/Heroku)
+→ Add live price API integration
+
+Final Model : XGBoost Regressor
+R² Score    : 0.8183
+RMSE        : 0.007201
+MAE         : 0.004658

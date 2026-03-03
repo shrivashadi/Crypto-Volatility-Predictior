@@ -1,0 +1,126 @@
+## Table of Contents
+1. Data Collection Module
+2. Data Preprocessing Module
+3. Feature Engineering Module
+4. Model Training Module
+5. Model Evaluation Module
+6. Deployment Module
+
+## Data Collection Module
+File     : work.ipynb (01_data_collection)
+
+Steps:
+- Load dataset.csv using pandas
+- Check shape → 72,946 rows, 10 columns
+- Check data types
+- Filter Bitcoin data → 3248 rows
+- Save → bitcoin_clean.csv
+
+Code Used:
+df = pd.read_csv('dataset.csv')
+bitcoin = df[df['crypto_name']=='Bitcoin']
+bitcoin.to_csv('bitcoin_clean.csv')
+
+## Data Preprocessing Module
+File : work.ipynb
+
+Steps:
+- Remove Unnamed column
+- Convert date to datetime format
+- Sort by date
+- Remove duplicates
+- Handle missing values → None found
+- Reset index
+
+Input  : dataset.csv (72,946 rows)
+Output : bitcoin_clean.csv (3248 rows)
+
+## Feature Engineering
+File : 02_feature_engineering.ipynb
+
+Features Created:
+
+TARGET:
+- volatility_7d = 7-day rolling std of returns
+
+PRICE FEATURES:
+- MA_7, MA_14, MA_30  (Moving Averages)
+- price_range         (High - Low)
+- price_range_pct     (Range / Close)
+- close_open_pct      (Close-Open / Open)
+
+TECHNICAL INDICATORS:
+- BB_width   (Bollinger Band Width)
+- ATR_14     (Average True Range)
+- RSI_14     (Relative Strength Index)
+
+VOLUME FEATURES:
+- volume_MA7      (7-day Volume Average)
+- volume_change   (Volume % Change)
+- volume_spike    (Volume / Volume_MA7)
+- liquidity_ratio (Volume / Market Cap)
+
+LAG FEATURES:
+- volatility_lag1, lag3, lag7
+- return_lag1, lag3
+
+Total Features : 23
+Input  : bitcoin_clean.csv
+Output : bitcoin_features.csv
+
+
+## Model Training Module
+File : 04_model_training.ipynb
+
+Steps:
+1. Load bitcoin_features.csv
+2. Define X (23 features) and y (volatility_7d)
+3. Train/Test Split
+   - Train : 80% (2409 rows)
+   - Test  : 20%  (603 rows)
+   - shuffle = False (time series)
+4. StandardScaler applied
+5. Models trained:
+   - Random Forest (n_estimators=100)
+   - XGBoost (n_estimators=200, lr=0.05)
+
+Best Model : XGBoost
+Saved As   : xgb_model.pkl
+             scaler.pkl
+
+
+## Model Evaluation Module
+Results Table:
+
+| Model         | RMSE     | MAE      | R²     |
+|---------------|----------|----------|--------|
+| Random Forest | 0.007467 | 0.005019 | 0.8046 |
+| XGBoost       | 0.007201 | 0.004658 | 0.8183 |
+
+Winner : XGBoost ✅
+
+Top 5 Important Features:
+1. volatility_lag1   → 0.78 importance
+2. price_range_pct   → 0.08 importance
+3. close_open_pct    → 0.03 importance
+4. volatility_lag7   → 0.02 importance
+5. volume_MA7        → 0.02 importance
+
+## Deployment Module
+File : app.py
+
+Tool      : Streamlit
+Libraries : streamlit, joblib, pandas, numpy
+
+Working:
+1. User opens localhost:8501
+2. Enters OHLC + Volume + Market Cap
+3. App calculates derived features
+4. Model predicts volatility
+5. Result shown with color code:
+   🔴 > 0.05  = High Volatility
+   🟡 0.02-0.05 = Medium Volatility
+   🟢 < 0.02  = Low Volatility
+
+Command to run:
+streamlit run app.py
