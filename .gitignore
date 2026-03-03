@@ -1,0 +1,5 @@
+_pycache_/
+*.pyc
+crypto_env/
+.env
+.DS_Store
